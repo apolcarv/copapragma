@@ -1,0 +1,90 @@
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'net.serenity-bdd.aggregator'
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.0.60")
+    }
+}
+
+ext {
+    serenityVersion = '2.0.64'
+    serenityCucumberVersion = '1.9.43'
+}
+test {
+    systemProperty "cucumber.options", System.getProperty("cucumber.options")
+}
+
+dependencies {
+    //Dependencias para excel
+    compile group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
+    //implementation group: 'org.apache.poi', name: 'poi', version: '5.0.0'
+    //implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '3.17'
+
+    //Dependencia MySQL
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.21'
+
+    testCompile "net.serenity-bdd:serenity-core:$rootProject.ext.serenityVersion"
+    testCompile "net.serenity-bdd:serenity-junit:$rootProject.ext.serenityVersion"
+    testCompile('junit:junit:4.12')
+    testCompile('org.assertj:assertj-core:3.11.1')
+    testCompile('org.slf4j:slf4j-simple:1.7.25')
+    compile "net.serenity-bdd:serenity-core:$rootProject.ext.serenityVersion"
+    compile "net.serenity-bdd:serenity-junit:$rootProject.ext.serenityVersion"
+    compile "net.serenity-bdd:serenity-cucumber:$rootProject.ext.serenityCucumberVersion"
+    compile "net.serenity-bdd:serenity-screenplay:$rootProject.ext.serenityVersion"
+    compile "net.serenity-bdd:serenity-screenplay-webdriver:$rootProject.ext.serenityVersion"
+// compile group: 'io.appium', name: 'java-client', version: '7.0.0' -- App Mobile
+// https://mvnrepository.com/artifact/org.testng/testng
+    testCompile group: 'org.testng', name: 'testng', version: '6.14.3'
+    // compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.21'
+    implementation "net.serenity-bdd:serenity-screenplay-rest:${serenityVersion}"
+    implementation group: 'org.json', name: 'json', version: '20200518'
+
+    compile group: 'dk.kewill.thirdpartymavencentral', name: 'jt400-full', version: '7.10'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.48'
+    implementation group: 'org.jdbi', name: 'jdbi', version: '2.78'
+// https://mvnrepository.com/artifact/org.postgresql/postgresql
+    implementation group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+
+    //Toma de captura de pantalla
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    implementation group: 'commons-io', name: 'commons-io', version: '2.8.0'
+
+
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Test) {
+        systemProperty "file.encoding", "UTF-8"
+        maxParallelForks = 1
+        useJUnit()
+        include('**/LoginRunner*')
+
+        reports.junitXml.setEnabled(false)
+        reports.html.setEnabled(false)
+
+    }
+
+
+}
+//Tarea para gradle
+// del sistema local tomo un usuario y contraseña
+task credentials(type: Test) {
+    systemProperty 'user',
+            System.getProperty('user')
+    systemProperty 'password',
+            System.getProperty('password')
+    systemProperty 'url',
+            System.getProperty('url')
+}
