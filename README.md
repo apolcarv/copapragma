@@ -1,2 +1,2 @@
 # copapragma
-Copa Pragma Clear code
+Copa Pragma clean code
